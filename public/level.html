@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level - CodeLearn</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                CodeLearn
+            </a>
+            <div class="nav-user hidden" id="navUser">
+                <div class="user-xp">
+                    <span class="xp-icon">✨</span>
+                    <span id="userXp">0</span> XP
+                </div>
+                <div class="user-menu">
+                    <span id="userName">User</span>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container level-page">
+        <div id="levelContent">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading level...
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal">
+            <div class="modal-icon">🎉</div>
+            <h2>Level Complete!</h2>
+            <p>Excellent work! You've mastered this challenge.</p>
+            <div class="xp-earned" id="xpEarned">
+                <span>✨</span>
+                <span>+0 XP</span>
+            </div>
+            <div class="modal-actions">
+                <a href="/" class="btn btn-outline">Back to Courses</a>
+                <a href="#" class="btn btn-primary" id="nextLevelBtn">Next Level</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        let currentLevel = null;
+        let currentChallenge = null;
+        let isSubmitting = false;
+
+        async function loadLevel() {
+            if (!requireAuth()) return;
+
+            const params = new URLSearchParams(window.location.search);
+            const levelId = params.get('id');
+            
+            if (!levelId) {
+                window.location.href = '/';
+                return;
+            }
+
+            const content = document.getElementById('levelContent');
+            
+            try {
+                const response = await api.getLevel(levelId);
+                currentLevel = response.data;
+                currentChallenge = currentLevel.challenge;
+                
+                document.title = `${currentLevel.title} - CodeLearn`;
+                
+                content.innerHTML = `
+                    <div class="level-header">
+                        <div class="breadcrumb">
+                            <a href="/">Courses</a>
+                            <span>›</span>
+                            <a href="/course.html?id=${currentLevel.course_id}">${currentLevel.course_title}</a>
+                            <span>›</span>
+                            <span>${currentLevel.title}</span>
+                        </div>
+                        <h1>${currentLevel.title}</h1>
+                    </div>
+                    
+                    <div class="level-content">
+                        ${currentLevel.theory_content ? `
+                            <section class="theory-section">
+                                <h2>📖 Theory</h2>
+                                <div class="theory-content" id="theoryContent"></div>
+                            </section>
+                        ` : ''}
+                        
+                        ${currentChallenge ? `
+                            <section class="challenge-section">
+                                <h2>💻 Challenge</h2>
+                                <div class="challenge-description">
+                                    ${currentChallenge.description}
+                                </div>
+                                
+                                <div class="code-editor-wrapper">
+                                    <div class="editor-header">
+                                        <span class="editor-language">
+                                            <span>📝</span>
+                                            ${currentLevel.course_language}
+                                        </span>
+                                        <button class="btn btn-sm btn-outline" onclick="resetCode()">Reset</button>
+                                    </div>
+                                    <textarea 
+                                        id="codeEditor" 
+                                        class="code-editor"
+                                        spellcheck="false"
+                                    >${currentChallenge.starter_code || ''}</textarea>
+                                </div>
+                                
+                                <div class="submit-section">
+                                    <button class="btn btn-primary btn-lg submit-btn" onclick="submitCode()" id="submitBtn">
+                                        ▶ Run Code
+                                    </button>
+                                </div>
+                                
+                                <div class="result-section" id="resultSection">
+                                    <div class="result-header">
+                                        <span id="resultIcon">⏳</span>
+                                        <span id="resultTitle">Processing...</span>
+                                    </div>
+                                    <pre class="result-output" id="resultOutput"></pre>
+                                </div>
+                            </section>
+                        ` : '<p>No challenge for this level.</p>'}
+                    </div>
+                `;
+                
+                // Parse markdown for theory
+                if (currentLevel.theory_content) {
+                    document.getElementById('theoryContent').innerHTML = 
+                        parseSimpleMarkdown(currentLevel.theory_content);
+                }
+                
+                // Handle tab key in editor
+                const editor = document.getElementById('codeEditor');
+                if (editor) {
+                    editor.addEventListener('keydown', handleTabKey);
+                }
+                
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="alert alert-error">
+                        ${error.message}
+                    </div>
+                    <a href="/" class="btn btn-primary">Back to Courses</a>
+                `;
+            }
+        }
+
+        function parseSimpleMarkdown(text) {
+            return text
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/```(\w+)?\n([\s\S]*?)```/gim, '<pre><code>$2</code></pre>')
+                .replace(/`([^`]+)`/gim, '<code>$1</code>')
+                .replace(/\*\*([^*]+)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*([^*]+)\*/gim, '<em>$1</em>')
+                .replace(/\n/gim, '<br>');
+        }
+
+        function handleTabKey(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        }
+
+        function resetCode() {
+            if (currentChallenge) {
+                document.getElementById('codeEditor').value = currentChallenge.starter_code || '';
+            }
+        }
+
+        async function submitCode() {
+            if (isSubmitting || !currentChallenge) return;
+            
+            const code = document.getElementById('codeEditor').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const resultSection = document.getElementById('resultSection');
+            
+            if (!code.trim()) {
+                showResult('error', '❌', 'Error', 'Please write some code first.');
+                return;
+            }
+            
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Running...';
+            
+            showResult('processing', '⏳', 'Processing...', 'Your code is being evaluated...');
+            
+            try {
+                // Submit code - result comes back immediately with Piston
+                const response = await api.submitCode(
+                    currentChallenge.id, 
+                    code, 
+                    currentChallenge.language_id
+                );
+                
+                const result = response.data;
+                
+                if (result.isCorrect) {
+                    showResult('success', '✅', 'Correct!', result.stdout || 'Your solution is correct!');
+                    
+                    // Show success modal
+                    if (result.xpAwarded > 0 || result.levelCompleted) {
+                        showSuccessModal(result.xpAwarded || 0, result.nextLevelId);
+                    }
+                    
+                    // Update XP in navbar
+                    if (result.newTotalXp !== undefined) {
+                        const userXpEl = document.getElementById('userXp');
+                        if (userXpEl) userXpEl.textContent = result.newTotalXp;
+                    }
+                } else {
+                    let output = '';
+                    if (result.compileOutput) {
+                        output = 'Compilation Error:\n' + result.compileOutput;
+                    } else if (result.stderr) {
+                        output = 'Error:\n' + result.stderr;
+                    } else if (result.stdout) {
+                        output = 'Your output:\n' + result.stdout + '\n\n(Expected different output)';
+                    } else {
+                        output = result.status?.description || 'Wrong answer';
+                    }
+                    showResult('error', '❌', result.status?.description || 'Wrong Answer', output);
+                }
+                
+            } catch (error) {
+                showResult('error', '❌', 'Error', error.message);
+            } finally {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = '▶ Run Code';
+            }
+        }
+
+        function showResult(type, icon, title, output) {
+            const section = document.getElementById('resultSection');
+            const iconEl = document.getElementById('resultIcon');
+            const titleEl = document.getElementById('resultTitle');
+            const outputEl = document.getElementById('resultOutput');
+            
+            section.className = 'result-section show ' + type;
+            iconEl.textContent = icon;
+            titleEl.textContent = title;
+            outputEl.textContent = output;
+        }
+
+        function showSuccessModal(xp, nextLevelId) {
+            const modal = document.getElementById('successModal');
+            const xpEarned = document.getElementById('xpEarned');
+            const nextBtn = document.getElementById('nextLevelBtn');
+            
+            xpEarned.innerHTML = `<span>✨</span><span>+${xp} XP</span>`;
+            
+            if (nextLevelId) {
+                nextBtn.href = `/level.html?id=${nextLevelId}`;
+                nextBtn.textContent = 'Next Level →';
+            } else {
+                nextBtn.href = `/course.html?id=${currentLevel.course_id}`;
+                nextBtn.textContent = 'Back to Course';
+            }
+            
+            modal.classList.add('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('successModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                e.currentTarget.classList.remove('show');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', loadLevel);
+    </script>
+</body>
+</html>

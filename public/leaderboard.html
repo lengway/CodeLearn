@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - CodeLearn</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                CodeLearn
+            </a>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Courses</a>
+                <a href="/leaderboard.html" class="nav-link active">Leaderboard</a>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <a href="/login.html" class="btn btn-outline">Login</a>
+                <a href="/register.html" class="btn btn-primary">Sign Up</a>
+            </div>
+            <div class="nav-user hidden" id="navUser">
+                <div class="user-xp">
+                    <span class="xp-icon">✨</span>
+                    <span id="userXp">0</span> XP
+                </div>
+                <div class="user-menu">
+                    <span id="userName">User</span>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container leaderboard-page">
+        <h1>🏆 Leaderboard</h1>
+        
+        <div class="leaderboard-list" id="leaderboardList">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading leaderboard...
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>CodeLearn © 2026 — Learn. Code. Level Up.</p>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        async function loadLeaderboard() {
+            const list = document.getElementById('leaderboardList');
+            
+            try {
+                const response = await api.getLeaderboard(20);
+                const users = response.data;
+                
+                if (users.length === 0) {
+                    list.innerHTML = '<p class="loading">No users yet. Be the first!</p>';
+                    return;
+                }
+                
+                list.innerHTML = users.map(user => `
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-rank rank-${user.rank}">${getRankEmoji(user.rank)}</div>
+                        <div class="leaderboard-user">
+                            <h3>${user.username}</h3>
+                            <span>Level ${user.level} • ${user.levelTitle}</span>
+                        </div>
+                        <div class="leaderboard-xp">${user.xp} XP</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                list.innerHTML = `<p class="loading">Failed to load leaderboard: ${error.message}</p>`;
+            }
+        }
+        
+        function getRankEmoji(rank) {
+            if (rank === 1) return '🥇';
+            if (rank === 2) return '🥈';
+            if (rank === 3) return '🥉';
+            return rank;
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadLeaderboard);
+    </script>
+</body>
+</html>

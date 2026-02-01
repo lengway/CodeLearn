@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: codelearn-db
+    environment:
+      POSTGRES_DB: codelearn
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    networks:
+      - codelearn-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Piston - Code Execution Engine
+  piston:
+    image: ghcr.io/engineer-man/piston
+    container_name: piston
+    restart: unless-stopped
+    ports:
+      - "2358:2000"
+    privileged: true
+    volumes:
+      - piston_packages:/piston/packages
+    tmpfs:
+      - /piston/jobs:exec,uid=1000,gid=1000
+      - /tmp:exec
+    networks:
+      - codelearn-network
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:2000/api/v2/runtimes', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # Piston Language Installer (runs once to install needed languages)
+  piston-setup:
+    image: curlimages/curl:latest
+    container_name: piston-setup
+    depends_on:
+      piston:
+        condition: service_healthy
+    networks:
+      - codelearn-network
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Installing Python 3.10..."
+        curl -s -X POST http://piston:2000/api/v2/packages -H "Content-Type: application/json" -d '{"language":"python","version":"3.10.0"}' || true
+        echo ""
+        echo "Installing Node.js 18..."
+        curl -s -X POST http://piston:2000/api/v2/packages -H "Content-Type: application/json" -d '{"language":"node","version":"18.15.0"}' || true
+        echo ""
+        echo "Installing GCC (C/C++) 10.2..."
+        curl -s -X POST http://piston:2000/api/v2/packages -H "Content-Type: application/json" -d '{"language":"gcc","version":"10.2.0"}' || true
+        echo ""
+        echo "Installing Java 15..."
+        curl -s -X POST http://piston:2000/api/v2/packages -H "Content-Type: application/json" -d '{"language":"java","version":"15.0.2"}' || true
+        echo ""
+        echo "Languages installation complete!"
+        sleep 5
+    restart: "no"
+
+  # Node.js Backend App
+  app:
+    build: .
+    container_name: codelearn-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=codelearn
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRES_IN=7d
+      - JUDGE0_API_URL=http://piston:2000
+    volumes:
+      - ./public:/app/public:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      piston:
+        condition: service_healthy
+    networks:
+      - codelearn-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  codelearn-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  piston_packages:

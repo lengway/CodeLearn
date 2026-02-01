@@ -1,0 +1,514 @@
+/* Course Page Styles */
+.course-page {
+    padding: 2rem 0;
+}
+
+.course-header-section {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.course-icon-large {
+    font-size: 4rem;
+    background: var(--surface-light);
+    padding: 1.5rem;
+    border-radius: 16px;
+    height: fit-content;
+}
+
+.course-details h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.course-details .course-meta {
+    margin-bottom: 1rem;
+}
+
+.course-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Roadmap */
+.roadmap-section h2 {
+    margin-bottom: 2rem;
+}
+
+.roadmap {
+    position: relative;
+    padding: 1rem 0;
+}
+
+.roadmap::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--surface-light);
+    border-radius: 2px;
+}
+
+.roadmap-item {
+    position: relative;
+    padding-left: 70px;
+    padding-bottom: 2rem;
+}
+
+.roadmap-item:last-child {
+    padding-bottom: 0;
+}
+
+.roadmap-node {
+    position: absolute;
+    left: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface-light);
+    border: 4px solid var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 1;
+    transition: all 0.3s;
+}
+
+.roadmap-item.completed .roadmap-node {
+    background: var(--success);
+    color: white;
+}
+
+.roadmap-item.available .roadmap-node {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.3);
+}
+
+.roadmap-item.locked .roadmap-node {
+    background: var(--surface-light);
+    color: var(--text-muted);
+}
+
+.roadmap-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.roadmap-item.available .roadmap-card {
+    border-color: var(--primary);
+}
+
+.roadmap-item.available .roadmap-card:hover {
+    transform: translateX(8px);
+}
+
+.roadmap-item.locked .roadmap-card {
+    opacity: 0.6;
+}
+
+.level-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
+.level-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.level-xp {
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+.level-status {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.status-completed {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--success);
+}
+
+.status-available {
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--primary);
+}
+
+.status-locked {
+    background: var(--surface-light);
+    color: var(--text-muted);
+}
+
+/* Level Page */
+.level-page {
+    padding: 2rem 0;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.level-header {
+    margin-bottom: 2rem;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb a {
+    color: var(--text-muted);
+}
+
+.breadcrumb a:hover {
+    color: var(--primary);
+}
+
+.level-header h1 {
+    font-size: 1.75rem;
+}
+
+.level-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+/* Theory Section */
+.theory-section {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+.theory-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theory-content {
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+
+.theory-content h1, .theory-content h2, .theory-content h3 {
+    color: var(--text);
+    margin: 1.5rem 0 1rem;
+}
+
+.theory-content code {
+    font-family: 'Fira Code', monospace;
+    background: var(--background);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.theory-content pre {
+    background: var(--background);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.theory-content pre code {
+    background: none;
+    padding: 0;
+}
+
+/* Challenge Section */
+.challenge-section {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+.challenge-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.challenge-description {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+}
+
+/* Code Editor */
+.code-editor-wrapper {
+    margin-bottom: 1rem;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: var(--background);
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+}
+
+.editor-language {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.code-editor {
+    width: 100%;
+    min-height: 250px;
+    padding: 1rem;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 0 0 8px 8px;
+    color: var(--text);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    resize: vertical;
+    tab-size: 4;
+}
+
+.code-editor:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Submit Button */
+.submit-section {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.submit-btn {
+    flex: 1;
+}
+
+/* Result Section */
+.result-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    display: none;
+}
+
+.result-section.show {
+    display: block;
+}
+
+.result-section.success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid var(--success);
+}
+
+.result-section.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--error);
+}
+
+.result-section.processing {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid var(--primary);
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.result-output {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    color: var(--text-muted);
+}
+
+/* Success Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 400px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s;
+}
+
+.modal-overlay.show .modal {
+    transform: scale(1);
+}
+
+.modal-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.modal h2 {
+    margin-bottom: 0.5rem;
+}
+
+.modal p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.xp-earned {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--secondary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Leaderboard */
+.leaderboard-page {
+    padding: 2rem 0;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.leaderboard-page h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.leaderboard-list {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+}
+
+.leaderboard-item:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-rank {
+    font-size: 1.25rem;
+    font-weight: 700;
+    width: 40px;
+    text-align: center;
+}
+
+.rank-1 { color: #ffd700; }
+.rank-2 { color: #c0c0c0; }
+.rank-3 { color: #cd7f32; }
+
+.leaderboard-user {
+    flex: 1;
+}
+
+.leaderboard-user h3 {
+    font-size: 1rem;
+    margin-bottom: 2px;
+}
+
+.leaderboard-user span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.leaderboard-xp {
+    font-weight: 600;
+    color: var(--secondary);
+}

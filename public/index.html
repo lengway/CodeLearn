@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeLearn - Learn Programming</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                CodeLearn
+            </a>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Courses</a>
+                <a href="/leaderboard.html" class="nav-link">Leaderboard</a>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <a href="/login.html" class="btn btn-outline">Login</a>
+                <a href="/register.html" class="btn btn-primary">Sign Up</a>
+            </div>
+            <div class="nav-user hidden" id="navUser">
+                <div class="user-xp">
+                    <span class="xp-icon">✨</span>
+                    <span id="userXp">0</span> XP
+                </div>
+                <div class="user-menu">
+                    <span id="userName">User</span>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Learn to Code, <span class="highlight">Level Up</span></h1>
+            <p>Master programming through interactive challenges. Earn XP, unlock levels, become a developer.</p>
+        </section>
+
+        <section class="courses-section">
+            <h2>Choose Your Path</h2>
+            <div class="courses-grid" id="coursesGrid">
+                <div class="loading">Loading courses...</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>CodeLearn © 2026 — Learn. Code. Level Up.</p>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

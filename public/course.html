@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course - CodeLearn</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                CodeLearn
+            </a>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Courses</a>
+                <a href="/leaderboard.html" class="nav-link">Leaderboard</a>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <a href="/login.html" class="btn btn-outline">Login</a>
+                <a href="/register.html" class="btn btn-primary">Sign Up</a>
+            </div>
+            <div class="nav-user hidden" id="navUser">
+                <div class="user-xp">
+                    <span class="xp-icon">✨</span>
+                    <span id="userXp">0</span> XP
+                </div>
+                <div class="user-menu">
+                    <span id="userName">User</span>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container course-page">
+        <div id="courseContent">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading course...
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        const languageIcons = {
+            python: '🐍',
+            javascript: '📜',
+            cpp: '⚙️',
+            default: '💻'
+        };
+
+        async function loadCourse() {
+            const params = new URLSearchParams(window.location.search);
+            const courseId = params.get('id');
+            
+            if (!courseId) {
+                window.location.href = '/';
+                return;
+            }
+
+            const content = document.getElementById('courseContent');
+            
+            try {
+                const response = await api.getCourse(courseId);
+                const course = response.data;
+                
+                document.title = `${course.title} - CodeLearn`;
+                
+                const icon = languageIcons[course.language] || languageIcons.default;
+                const isLoggedIn = !!localStorage.getItem('token');
+                
+                content.innerHTML = `
+                    <div class="course-header-section">
+                        <div class="course-icon-large">${icon}</div>
+                        <div class="course-details">
+                            <h1>${course.title}</h1>
+                            <div class="course-meta">
+                                <span>${course.difficulty || 'Beginner'}</span>
+                                <span>•</span>
+                                <span>${course.language}</span>
+                            </div>
+                            <p class="course-description">${course.description || ''}</p>
+                            ${course.progress ? `
+                                <div class="course-stats">
+                                    <div class="stat">
+                                        <div class="stat-value">${course.progress.completed}</div>
+                                        <div class="stat-label">Completed</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">${course.progress.total}</div>
+                                        <div class="stat-label">Total Levels</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">${course.progress.percentage}%</div>
+                                        <div class="stat-label">Progress</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <section class="roadmap-section">
+                        <h2>📍 Learning Path</h2>
+                        <div class="roadmap">
+                            ${course.levels.map((level, index) => createRoadmapItem(level, index, isLoggedIn, courseId)).join('')}
+                        </div>
+                    </section>
+                `;
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="alert alert-error">
+                        Failed to load course: ${error.message}
+                    </div>
+                    <a href="/" class="btn btn-primary">Back to Courses</a>
+                `;
+            }
+        }
+
+        function createRoadmapItem(level, index, isLoggedIn, courseId) {
+            const status = level.status || 'locked';
+            const statusClass = status;
+            const statusLabel = {
+                completed: 'Completed ✓',
+                available: 'Start →',
+                locked: '🔒 Locked'
+            }[status];
+            const statusBadgeClass = `status-${status}`;
+            
+            const isClickable = status === 'available' || status === 'completed';
+            const href = isLoggedIn && isClickable ? `/level.html?id=${level.id}` : '#';
+            const onClick = !isLoggedIn && status !== 'locked' ? 
+                `onclick="alert('Please login to start learning'); window.location.href='/login.html?redirect=/course.html?id=${courseId}'"` : '';
+            
+            return `
+                <div class="roadmap-item ${statusClass}">
+                    <div class="roadmap-node">${index + 1}</div>
+                    <a href="${href}" ${onClick} class="roadmap-card" ${!isClickable ? 'style="pointer-events: none"' : ''}>
+                        <div class="level-info">
+                            <h3>${level.title}</h3>
+                            <div class="level-meta">
+                                <span class="level-xp">+${level.xp_reward} XP</span>
+                                ${level.attempts ? `<span>${level.attempts} attempts</span>` : ''}
+                            </div>
+                        </div>
+                        <span class="level-status ${statusBadgeClass}">${statusLabel}</span>
+                    </a>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCourse);
+    </script>
+</body>
+</html>
