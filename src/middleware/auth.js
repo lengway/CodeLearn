@@ -44,4 +44,17 @@ const optionalAuth = (req, res, next) => {
     }
 };
 
-module.exports = { auth, optionalAuth };
+// Admin middleware - requires auth first
+const requireAdmin = (req, res, next) => {
+    if (!req.user) {
+        return next(ApiError.unauthorized('Authentication required'));
+    }
+    
+    if (req.user.role !== 'admin') {
+        return next(ApiError.forbidden('Admin access required'));
+    }
+    
+    next();
+};
+
+module.exports = { auth, optionalAuth, requireAdmin };

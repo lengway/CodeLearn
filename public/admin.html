@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - CodeLearn</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">🎓 CodeLearn</a>
+            <span class="admin-badge">Admin</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="btn btn-secondary">← Back to Site</a>
+            <span id="adminName"></span>
+            <button id="logoutBtn" class="btn btn-danger">Logout</button>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <nav class="admin-nav">
+                <a href="#dashboard" class="admin-nav-item active" data-section="dashboard">
+                    📊 Dashboard
+                </a>
+                <a href="#courses" class="admin-nav-item" data-section="courses">
+                    📚 Courses
+                </a>
+                <a href="#users" class="admin-nav-item" data-section="users">
+                    👥 Users
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="admin-section active">
+                <h1>Dashboard</h1>
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalUsers">-</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalCourses">-</div>
+                        <div class="stat-label">Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalLevels">-</div>
+                        <div class="stat-label">Levels</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalSubmissions">-</div>
+                        <div class="stat-label">Submissions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="correctSubmissions">-</div>
+                        <div class="stat-label">Correct Answers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="newUsersWeek">-</div>
+                        <div class="stat-label">New Users (7d)</div>
+                    </div>
+                </div>
+
+                <h2>Recent Submissions</h2>
+                <div class="table-container">
+                    <table class="admin-table" id="recentSubmissionsTable">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Level</th>
+                                <th>Status</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Courses Section -->
+            <section id="courses-section" class="admin-section">
+                <div class="section-header">
+                    <h1>Courses</h1>
+                    <button class="btn btn-primary" onclick="showCourseModal()">+ New Course</button>
+                </div>
+                <div class="courses-list" id="coursesList"></div>
+            </section>
+
+            <!-- Course Editor Section -->
+            <section id="course-editor-section" class="admin-section">
+                <div class="section-header">
+                    <button class="btn btn-secondary" onclick="showSection('courses')">← Back</button>
+                    <h1 id="courseEditorTitle">Edit Course</h1>
+                </div>
+                
+                <div class="course-editor">
+                    <div class="editor-panel">
+                        <h3>Course Settings</h3>
+                        <form id="courseForm">
+                            <input type="hidden" id="courseId">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" id="courseTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="courseDescription" rows="3"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Language</label>
+                                    <select id="courseLanguage" required>
+                                        <option value="python">Python</option>
+                                        <option value="javascript">JavaScript</option>
+                                        <option value="cpp">C++</option>
+                                        <option value="c">C</option>
+                                        <option value="java">Java</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Difficulty</label>
+                                    <select id="courseDifficulty">
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="coursePublished" checked>
+                                    Published
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Course</button>
+                        </form>
+                    </div>
+
+                    <div class="levels-panel">
+                        <div class="panel-header">
+                            <h3>Levels</h3>
+                            <button class="btn btn-sm btn-primary" onclick="showLevelModal()">+ Add Level</button>
+                        </div>
+                        <div class="levels-list" id="levelsList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Level Editor Section -->
+            <section id="level-editor-section" class="admin-section">
+                <div class="section-header">
+                    <button class="btn btn-secondary" onclick="backToCourseEditor()">← Back</button>
+                    <h1 id="levelEditorTitle">Edit Level</h1>
+                </div>
+
+                <div class="level-editor">
+                    <div class="editor-tabs">
+                        <button class="tab-btn active" data-tab="theory">Theory</button>
+                        <button class="tab-btn" data-tab="challenge">Challenge</button>
+                    </div>
+
+                    <div class="tab-content active" id="theory-tab">
+                        <form id="levelForm">
+                            <input type="hidden" id="levelId">
+                            <input type="hidden" id="levelCourseId">
+                            <div class="form-group">
+                                <label>Level Title</label>
+                                <input type="text" id="levelTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Theory Content (Markdown)</label>
+                                <textarea id="levelTheory" rows="15" class="code-textarea"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>XP Reward</label>
+                                <input type="number" id="levelXp" value="10" min="1">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Level</button>
+                        </form>
+                    </div>
+
+                    <div class="tab-content" id="challenge-tab">
+                        <form id="challengeForm">
+                            <div class="form-group">
+                                <label>Task Description</label>
+                                <textarea id="challengeDescription" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Starter Code</label>
+                                <textarea id="challengeStarterCode" rows="6" class="code-textarea"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Language</label>
+                                    <select id="challengeLanguage">
+                                        <option value="71">Python</option>
+                                        <option value="63">JavaScript</option>
+                                        <option value="54">C++</option>
+                                        <option value="50">C</option>
+                                        <option value="62">Java</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Test Input (stdin)</label>
+                                <textarea id="challengeInput" rows="3" class="code-textarea"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Expected Output</label>
+                                <textarea id="challengeOutput" rows="3" class="code-textarea" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Challenge</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users-section" class="admin-section">
+                <h1>Users</h1>
+                <div class="table-container">
+                    <table class="admin-table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>XP</th>
+                                <th>Submissions</th>
+                                <th>Completed</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Course Modal -->
+    <div class="modal" id="courseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Course</h2>
+                <button class="modal-close" onclick="closeCourseModal()">&times;</button>
+            </div>
+            <form id="newCourseForm">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="newCourseTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="newCourseDescription" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Language</label>
+                        <select id="newCourseLanguage" required>
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="cpp">C++</option>
+                            <option value="c">C</option>
+                            <option value="java">Java</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Difficulty</label>
+                        <select id="newCourseDifficulty">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCourseModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Level Modal -->
+    <div class="modal" id="levelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Level</h2>
+                <button class="modal-close" onclick="closeLevelModal()">&times;</button>
+            </div>
+            <form id="newLevelForm">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="newLevelTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>XP Reward</label>
+                    <input type="number" id="newLevelXp" value="10" min="1">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeLevelModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Level</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

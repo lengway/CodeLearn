@@ -1,5 +1,17 @@
 -- Seed data for CodeLearn Platform
 
+-- Insert admin user (password: admin123)
+-- Password hash generated with bcrypt (12 rounds)
+INSERT INTO users (id, email, username, password_hash, role, xp) VALUES
+(
+    '00000000-0000-0000-0000-000000000001',
+    'admin@codelearn.com',
+    'admin',
+    '$2a$12$yMmJqVOu9z4ECYZeVVAY.eCctbWLsYjPdO4LhPS5rQBVg4gtPV5Se',
+    'admin',
+    0
+);
+
 -- Insert sample courses
 INSERT INTO courses (id, title, description, language, difficulty, image_url) VALUES
 (

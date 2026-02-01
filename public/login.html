@@ -64,6 +64,9 @@
                 const response = await api.login(email, password);
                 api.setToken(response.data.token);
                 
+                // Save user data including role
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                
                 // Redirect
                 const params = new URLSearchParams(window.location.search);
                 const redirect = params.get('redirect') || '/';
