@@ -35,6 +35,33 @@ class UserService {
             levelTitle: getLevelTitle(calculateLevel(user.xp))
         }));
     }
+
+    async updateProfile(userId, updateData) {
+        const { username } = updateData;
+
+        if (!username || username.length < 3 || username.length > 50) {
+            throw ApiError.badRequest('Username must be 3-50 characters');
+        }
+
+        const updated = await userRepository.updateProfile(userId, { username });
+        if (!updated) {
+            throw ApiError.notFound('User not found');
+        }
+
+        const xpData = getXpProgress(updated.xp);
+        const levelTitle = getLevelTitle(xpData.currentLevel);
+
+        return {
+            id: updated.id,
+            email: updated.email,
+            username: updated.username,
+            xp: updated.xp,
+            level: xpData.currentLevel,
+            levelTitle,
+            xpProgress: xpData,
+            updatedAt: updated.updated_at
+        };
+    }
 }
 
 module.exports = new UserService();

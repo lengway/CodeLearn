@@ -35,4 +35,16 @@ const getLeaderboard = catchAsync(async (req, res) => {
     });
 });
 
-module.exports = { getProfile, getProgress, getLeaderboard };
+const updateProfile = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+    const { username } = req.body;
+    
+    const profile = await userService.updateProfile(userId, { username });
+    
+    res.json({
+        success: true,
+        data: profile
+    });
+});
+
+module.exports = { getProfile, getProgress, getLeaderboard, updateProfile };

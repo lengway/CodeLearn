@@ -47,6 +47,17 @@ class UserRepository {
         );
         return result.rows;
     }
+
+    async updateProfile(userId, updateData) {
+        const { username } = updateData;
+        const result = await db.query(
+            `UPDATE users SET username = $1, updated_at = CURRENT_TIMESTAMP 
+             WHERE id = $2 
+             RETURNING id, email, username, xp, created_at, updated_at`,
+            [username, userId]
+        );
+        return result.rows[0];
+    }
 }
 
 module.exports = new UserRepository();
