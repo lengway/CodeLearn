@@ -90,7 +90,7 @@ services:
       - DB_PASSWORD=postgres
       - JWT_SECRET=your-super-secret-jwt-key-change-in-production
       - JWT_EXPIRES_IN=7d
-      - JUDGE0_API_URL=http://piston:2000
+      - PISTON_API_URL=http://piston:2000
     volumes:
       - ./public:/app/public:ro
     depends_on:

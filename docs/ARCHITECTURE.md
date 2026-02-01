@@ -168,7 +168,7 @@ src/
 ├── config/
 │   ├── database.js     # Подключение к PostgreSQL
 │   ├── jwt.js          # Настройки JWT
-│   └── judge0.js       # Настройки Piston
+│   └── piston.js       # Настройки Piston
 ├── routes/             # Определение endpoints
 ├── controllers/        # Обработка запросов
 ├── services/           # Бизнес-логика
@@ -601,7 +601,6 @@ router.use(requireAdmin);   // Потом проверка роли
 | `DB_NAME` | Имя базы | codelearn |
 | `JWT_SECRET` | Секрет для подписи токенов | your-secret-key |
 | `JWT_EXPIRES_IN` | Срок действия токена | 7d |
-| `JUDGE0_API_URL` | URL Piston API | http://piston:2000 |
 
 ---
 

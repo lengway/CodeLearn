@@ -1,23 +1,14 @@
 const axios = require('axios');
+const pistonConfig = require('../config/piston');
 const challengeRepository = require('../repositories/challenge.repository');
 const submissionRepository = require('../repositories/submission.repository');
 const progressService = require('./progress.service');
 const levelRepository = require('../repositories/level.repository');
 const ApiError = require('../utils/ApiError');
 
-// Piston language mapping (Judge0 ID -> Piston config)
-// Piston uses different language names than Judge0
-const languageMap = {
-    71: { language: 'python', version: '3.10.0', filename: 'main.py' },     // Python 3
-    63: { language: 'javascript', version: '18.15.0', filename: 'main.js' }, // JavaScript (Node.js)
-    54: { language: 'c++', version: '10.2.0', filename: 'main.cpp' },        // C++ 
-    50: { language: 'c', version: '10.2.0', filename: 'main.c' },            // C
-    62: { language: 'java', version: '15.0.2', filename: 'Main.java' },      // Java
-};
-
 class CodeExecutionService {
     constructor() {
-        this.apiUrl = process.env.JUDGE0_API_URL || 'http://localhost:2358';
+        this.apiUrl = pistonConfig.apiUrl;
         this.client = axios.create({
             baseURL: this.apiUrl,
             timeout: 30000
@@ -37,7 +28,7 @@ class CodeExecutionService {
         // Increment attempts
         await progressService.incrementAttempts(userId, level.id);
 
-        const langConfig = languageMap[languageId || challenge.language_id];
+        const langConfig = pistonConfig.languages[languageId || challenge.language_id];
         if (!langConfig) {
             throw ApiError.badRequest('Unsupported language');
         }
@@ -52,10 +43,10 @@ class CodeExecutionService {
                     content: sourceCode 
                 }],
                 stdin: challenge.test_input || '',
-                compile_timeout: 3000,
-                run_timeout: 3000,
-                compile_memory_limit: -1,
-                run_memory_limit: -1
+                compile_timeout: pistonConfig.limits.compileTimeout,
+                run_timeout: pistonConfig.limits.runTimeout,
+                compile_memory_limit: pistonConfig.limits.compileMemory,
+                run_memory_limit: pistonConfig.limits.runMemory
             };
 
             // Execute code via Piston
@@ -156,18 +147,15 @@ class CodeExecutionService {
         try {
             const response = await this.client.get('/api/v2/runtimes');
             return response.data.map(r => ({
-                id: Object.entries(languageMap).find(([_, v]) => v.language === r.language)?.[0] || r.language,
+                id: Object.entries(pistonConfig.languages).find(([_, v]) => v.language === r.language)?.[0] || r.language,
                 name: `${r.language} (${r.version})`
             }));
         } catch (error) {
-            // Return default list
-            return [
-                { id: 71, name: 'Python 3' },
-                { id: 63, name: 'JavaScript (Node.js)' },
-                { id: 54, name: 'C++' },
-                { id: 50, name: 'C' },
-                { id: 62, name: 'Java' }
-            ];
+            // Return default list from config
+            return Object.entries(pistonConfig.languages).map(([id, lang]) => ({
+                id: parseInt(id),
+                name: `${lang.language} (${lang.version})`
+            }));
         }
     }
 
