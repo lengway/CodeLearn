@@ -5,6 +5,7 @@ const levelsRoutes = require('./levels.routes');
 const submissionsRoutes = require('./submissions.routes');
 const usersRoutes = require('./users.routes');
 const adminRoutes = require('./admin.routes');
+const playgroundRoutes = require('./playground.routes');
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.use('/levels', levelsRoutes);
 router.use('/submissions', submissionsRoutes);
 router.use('/users', usersRoutes);
 router.use('/admin', adminRoutes);
+router.use('/playground', playgroundRoutes);
 
 module.exports = router;

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground - CodeLearn</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        .playground-page {
+            padding: 2rem 0;
+        }
+
+        .playground-header {
+            margin-bottom: 2rem;
+        }
+
+        .playground-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .playground-header p {
+            color: var(--text-muted);
+        }
+
+        .playground-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            min-height: 600px;
+        }
+
+        .playground-panel {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background: var(--surface-light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .language-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .language-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .templates-bar {
+            display: flex;
+            gap: 8px;
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            background: var(--surface);
+        }
+
+        .template-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .template-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .code-editor {
+            flex: 1;
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: none;
+            background: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            resize: none;
+            outline: none;
+            min-height: 400px;
+        }
+
+        .code-editor::placeholder {
+            color: var(--text-muted);
+        }
+
+        .output-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stdin-section {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stdin-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .stdin-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface-light);
+            color: var(--text);
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 50px;
+            max-height: 120px;
+        }
+
+        .stdin-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .output-display {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            overflow: auto;
+            background: #0d1117;
+        }
+
+        .output-display pre {
+            margin: 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .output-stdout { color: #7ee787; }
+        .output-stderr { color: #f85149; }
+        .output-info { color: var(--text-muted); font-style: italic; }
+
+        .run-btn {
+            padding: 10px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .run-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .run-btn .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .run-btn.loading .spinner { display: block; }
+        .run-btn.loading .btn-text { display: none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .shortcut-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .playground-container {
+                grid-template-columns: 1fr;
+            }
+            .playground-panel {
+                min-height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                CodeLearn
+            </a>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Courses</a>
+                <a href="/playground.html" class="nav-link active">Playground</a>
+                <a href="/leaderboard.html" class="nav-link">Leaderboard</a>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <a href="/login.html" class="btn btn-outline">Login</a>
+                <a href="/register.html" class="btn btn-primary">Sign Up</a>
+            </div>
+            <div class="nav-user hidden" id="navUser">
+                <div class="user-xp">
+                    <span class="xp-icon">✨</span>
+                    <span id="userXp">0</span> XP
+                </div>
+                <div class="user-menu">
+                    <span id="userName">User</span>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container playground-page">
+        <div class="playground-header">
+            <h1>🎮 Code Playground</h1>
+            <p>Write, run, and experiment with code in multiple languages</p>
+        </div>
+
+        <div class="playground-container">
+            <div class="playground-panel">
+                <div class="panel-header">
+                    <span class="panel-title">
+                        <span>📝</span>
+                        Code Editor
+                    </span>
+                    <div class="panel-actions">
+                        <select id="languageSelect" class="language-select">
+                            <option value="71">Python 3</option>
+                            <option value="63">JavaScript</option>
+                            <option value="54">C++</option>
+                            <option value="50">C</option>
+                            <option value="62">Java</option>
+                        </select>
+                        <button id="runBtn" class="run-btn">
+                            <span class="spinner"></span>
+                            <span class="btn-text">▶ Run</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="templates-bar">
+                    <button class="template-btn" data-template="hello">Hello World</button>
+                    <button class="template-btn" data-template="input">Input</button>
+                    <button class="template-btn" data-template="loop">Loop</button>
+                    <button class="template-btn" data-template="function">Function</button>
+                    <button class="template-btn" data-template="array">Array</button>
+                </div>
+                <textarea id="codeEditor" class="code-editor" spellcheck="false" placeholder="Write your code here...">print("Hello, World!")</textarea>
+            </div>
+
+            <div class="playground-panel">
+                <div class="panel-header">
+                    <span class="panel-title">
+                        <span>💻</span>
+                        Output
+                    </span>
+                    <button id="clearBtn" class="btn btn-outline btn-sm">Clear</button>
+                </div>
+                <div class="output-content">
+                    <div class="stdin-section">
+                        <label class="stdin-label" for="stdinInput">Input (stdin):</label>
+                        <textarea id="stdinInput" class="stdin-input" placeholder="Enter program input here..."></textarea>
+                    </div>
+                    <div class="output-display">
+                        <pre id="outputPre"><span class="output-info">Press Run or Ctrl+Enter to execute code...</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="shortcut-hint">💡 Tip: Press <strong>Ctrl+Enter</strong> to run code, <strong>Tab</strong> for indentation</p>
+    </main>
+
+    <footer class="footer">
+        <p>CodeLearn © 2026 — Learn. Code. Level Up.</p>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        const templates = {
+            71: { // Python
+                hello: 'print("Hello, World!")',
+                input: 'name = input("Enter your name: ")\nprint(f"Hello, {name}!")',
+                loop: 'for i in range(1, 6):\n    print(f"Number: {i}")',
+                function: 'def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))',
+                array: 'numbers = [1, 2, 3, 4, 5]\nprint("Sum:", sum(numbers))\nprint("Max:", max(numbers))'
+            },
+            63: { // JavaScript
+                hello: 'console.log("Hello, World!");',
+                input: 'const readline = require("readline");\nconst rl = readline.createInterface({ input: process.stdin });\nrl.on("line", (name) => {\n    console.log(`Hello, ${name}!`);\n    rl.close();\n});',
+                loop: 'for (let i = 1; i <= 5; i++) {\n    console.log(`Number: ${i}`);\n}',
+                function: 'function factorial(n) {\n    if (n <= 1) return 1;\n    return n * factorial(n - 1);\n}\n\nconsole.log(factorial(5));',
+                array: 'const numbers = [1, 2, 3, 4, 5];\nconsole.log("Sum:", numbers.reduce((a, b) => a + b));\nconsole.log("Max:", Math.max(...numbers));'
+            },
+            54: { // C++
+                hello: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}',
+                input: '#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string name;\n    cout << "Enter your name: ";\n    cin >> name;\n    cout << "Hello, " << name << "!" << endl;\n    return 0;\n}',
+                loop: '#include <iostream>\nusing namespace std;\n\nint main() {\n    for (int i = 1; i <= 5; i++) {\n        cout << "Number: " << i << endl;\n    }\n    return 0;\n}',
+                function: '#include <iostream>\nusing namespace std;\n\nint factorial(int n) {\n    if (n <= 1) return 1;\n    return n * factorial(n - 1);\n}\n\nint main() {\n    cout << factorial(5) << endl;\n    return 0;\n}',
+                array: '#include <iostream>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    int arr[] = {1, 2, 3, 4, 5};\n    int sum = 0;\n    for (int x : arr) sum += x;\n    cout << "Sum: " << sum << endl;\n    cout << "Max: " << *max_element(arr, arr + 5) << endl;\n    return 0;\n}'
+            },
+            50: { // C
+                hello: '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
+                input: '#include <stdio.h>\n\nint main() {\n    char name[50];\n    printf("Enter your name: ");\n    scanf("%s", name);\n    printf("Hello, %s!\\n", name);\n    return 0;\n}',
+                loop: '#include <stdio.h>\n\nint main() {\n    for (int i = 1; i <= 5; i++) {\n        printf("Number: %d\\n", i);\n    }\n    return 0;\n}',
+                function: '#include <stdio.h>\n\nint factorial(int n) {\n    if (n <= 1) return 1;\n    return n * factorial(n - 1);\n}\n\nint main() {\n    printf("%d\\n", factorial(5));\n    return 0;\n}',
+                array: '#include <stdio.h>\n\nint main() {\n    int arr[] = {1, 2, 3, 4, 5};\n    int sum = 0, max = arr[0];\n    for (int i = 0; i < 5; i++) {\n        sum += arr[i];\n        if (arr[i] > max) max = arr[i];\n    }\n    printf("Sum: %d\\nMax: %d\\n", sum, max);\n    return 0;\n}'
+            },
+            62: { // Java
+                hello: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+                input: 'import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print("Enter your name: ");\n        String name = sc.nextLine();\n        System.out.println("Hello, " + name + "!");\n    }\n}',
+                loop: 'public class Main {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 5; i++) {\n            System.out.println("Number: " + i);\n        }\n    }\n}',
+                function: 'public class Main {\n    static int factorial(int n) {\n        if (n <= 1) return 1;\n        return n * factorial(n - 1);\n    }\n    \n    public static void main(String[] args) {\n        System.out.println(factorial(5));\n    }\n}',
+                array: 'import java.util.Arrays;\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4, 5};\n        int sum = Arrays.stream(arr).sum();\n        int max = Arrays.stream(arr).max().getAsInt();\n        System.out.println("Sum: " + sum);\n        System.out.println("Max: " + max);\n    }\n}'
+            }
+        };
+
+        const codeEditor = document.getElementById('codeEditor');
+        const languageSelect = document.getElementById('languageSelect');
+        const runBtn = document.getElementById('runBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const outputPre = document.getElementById('outputPre');
+        const stdinInput = document.getElementById('stdinInput');
+
+        // Load template on language change
+        languageSelect.addEventListener('change', () => {
+            const lang = languageSelect.value;
+            codeEditor.value = templates[lang]?.hello || '';
+        });
+
+        // Template buttons
+        document.querySelectorAll('.template-btn[data-template]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const template = btn.dataset.template;
+                const lang = languageSelect.value;
+                if (templates[lang]?.[template]) {
+                    codeEditor.value = templates[lang][template];
+                }
+            });
+        });
+
+        // Clear output
+        clearBtn.addEventListener('click', () => {
+            outputPre.innerHTML = '<span class="output-info">Press Run or Ctrl+Enter to execute code...</span>';
+        });
+
+        // Run code
+        runBtn.addEventListener('click', runCode);
+
+        async function runCode() {
+            const code = codeEditor.value;
+            const languageId = parseInt(languageSelect.value);
+            const stdin = stdinInput.value;
+
+            if (!code.trim()) {
+                outputPre.innerHTML = '<span class="output-stderr">Error: Please enter some code</span>';
+                return;
+            }
+
+            runBtn.classList.add('loading');
+            runBtn.disabled = true;
+            outputPre.innerHTML = '<span class="output-info">Running...</span>';
+
+            try {
+                const response = await fetch('/api/playground/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, languageId, stdin })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const result = data.data;
+                    let output = '';
+                    
+                    if (result.compileOutput) {
+                        output += `<span class="output-stderr">${escapeHtml(result.compileOutput)}</span>\n`;
+                    }
+                    if (result.stderr) {
+                        output += `<span class="output-stderr">${escapeHtml(result.stderr)}</span>\n`;
+                    }
+                    if (result.stdout) {
+                        output += `<span class="output-stdout">${escapeHtml(result.stdout)}</span>`;
+                    }
+                    if (!output) {
+                        output = '<span class="output-info">Program finished with no output</span>';
+                    }
+                    
+                    outputPre.innerHTML = output;
+                } else {
+                    outputPre.innerHTML = `<span class="output-stderr">Error: ${escapeHtml(data.error || 'Unknown error')}</span>`;
+                }
+            } catch (error) {
+                outputPre.innerHTML = `<span class="output-stderr">Network error: ${escapeHtml(error.message)}</span>`;
+            } finally {
+                runBtn.classList.remove('loading');
+                runBtn.disabled = false;
+            }
+        }
+
+        // Keyboard shortcut: Ctrl+Enter to run
+        codeEditor.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
+            }
+            // Tab support
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = codeEditor.selectionStart;
+                const end = codeEditor.selectionEnd;
+                codeEditor.value = codeEditor.value.substring(0, start) + '    ' + codeEditor.value.substring(end);
+                codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auth UI
+        updateAuthUI();
+    </script>
+</body>
+</html>
