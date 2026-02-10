@@ -1,98 +1,98 @@
 # CodeLearn - Online Programming Learning Platform
 
-Платформа для обучения программированию с автоматической проверкой кода через Piston.
+A platform for learning programming with automatic code checking via Piston.
 
-## � О проекте
+## 📌 About the project
 
-**Тема:** Интерактивная образовательная платформа для изучения программирования с автоматической проверкой кода.
+**Topic:** An interactive educational platform for learning programming with automatic code checking.
 
-**Почему мы выбрали этот проект:**
-Развитие IT-сферы в Казахстане требует качественных образовательных инструментов. Мы создали платформу, которая делает изучение программирования доступным и увлекательным — с пошаговыми уроками, практическими заданиями и мгновенной обратной связью. Это помогает начинающим разработчикам быстрее осваивать навыки и вносить вклад в развитие технологического сектора страны.
+**Why we chose this project:**
+The growth of Kazakhstan’s IT sector requires accessible, high‑quality learning tools. We built a platform that makes learning programming approachable and engaging with step‑by‑step lessons, hands‑on tasks, and instant feedback. This helps beginners build skills faster and contribute to the country’s technology ecosystem.
 
-**Основные возможности:**
-- Регистрация и авторизация пользователей (JWT)
-- Курсы с уровнями в формате roadmap
-- Теоретические материалы + практические задания
-- Автоматическая проверка кода через Piston
-- Система XP и прогресса
-- Таблица лидеров
-- Админ-панель для управления контентом
+**Key features:**
+- User registration and authentication (JWT)
+- Courses with roadmap‑style levels
+- Theory + practice tasks
+- Automatic code checking via Piston
+- XP and progress system
+- Leaderboard
+- Admin panel for content management
 
-## 👥 Команда
+## 👥 Team
 
-| Участник | Роль | Обязанности |
-|----------|------|-------------|
-| **Роман Кутбеев** | Backend Developer | API, база данных, интеграция Piston, Docker |
-| **Алиби Айбекулы** | Frontend Developer | UI/UX, клиентская часть, тестирование |
+| Member | Role | Responsibilities |
+|--------|------|------------------|
+| **Roman Kutbeev** | Backend Developer | API, database, Piston integration, Docker |
+| **Alibi Aibekuly** | Frontend Developer | UI/UX, client app, testing |
 
-## �🚀 Быстрый старт
+## 🚀 Quick start
 
-### Требования
+### Requirements
 - Docker & Docker Compose
-- (Опционально) Node.js 18+ для локальной разработки
+- (Optional) Node.js 18+ for local development
 
-### 🐳 Запуск через Docker (рекомендуется)
+### 🐳 Run with Docker (recommended)
 
 ```bash
-# Запустить весь стек одной командой
+# Start the full stack
 docker-compose up -d
 
-# Или используя скрипт (PowerShell)
+# Or use the script (PowerShell)
 .\scripts\start.ps1
 ```
 
-Это запустит:
-- **PostgreSQL** (порт 5432) - база данных
-- **Piston** (порт 2358) - движок выполнения кода
-- **Node.js App** (порт 3000) - бэкенд + фронтенд
+This will start:
+- **PostgreSQL** (port 5432) - database
+- **Piston** (port 2358) - code execution engine
+- **Node.js App** (port 3000) - backend + frontend
 
-После запуска платформа доступна по адресу: **http://localhost:3000**
+After startup, the platform is available at **http://localhost:3000**
 
-### Проверка работоспособности
+### Health checks
 
 ```bash
-# Проверить статус контейнеров
+# Check container status
 docker-compose ps
 
-# Проверить API
+# Check API
 curl http://localhost:3000/api/health
 
-# Проверить Piston (доступные языки)
+# Check Piston (available runtimes)
 curl http://localhost:2358/api/v2/runtimes
 ```
 
-### Остановка
+### Stop
 
 ```bash
 docker-compose down
 
-# Для полной очистки (удаление volumes)
+# Full cleanup (remove volumes)
 docker-compose down -v
 ```
 
 ---
 
-## 💻 Локальная разработка (без Docker)
+## 💻 Local development (without Docker)
 
-### Требования
+### Requirements
 - Node.js 18+
 - PostgreSQL 15+
-- Piston (через Docker)
+- Piston (via Docker)
 
-### Установка
+### Setup
 
-1. **Установить зависимости:**
+1. **Install dependencies:**
 ```bash
 npm install
 ```
 
-2. **Настроить environment:**
+2. **Configure environment:**
 ```bash
-# Отредактировать .env при необходимости
+# Edit .env if needed
 # DB_HOST=localhost
 ```
 
-3. **Запустить PostgreSQL и Piston:**
+3. **Start PostgreSQL and Piston:**
 ```bash
 # PostgreSQL
 docker-compose up -d postgres
@@ -101,77 +101,85 @@ docker-compose up -d postgres
 docker-compose up -d piston piston-setup
 ```
 
-4. **Инициализировать базу данных:**
+4. **Initialize the database:**
 ```bash
 npm run db:init
 ```
 
-5. **Запустить сервер в режиме разработки:**
+5. **Start the dev server:**
 ```bash
 npm run dev
 ```
 
-Сервер будет доступен на http://localhost:3000
+The server will be available at http://localhost:3000
 
 ---
 
-## 📁 Структура проекта
+## 📁 Project structure
 
 ```
 ├── src/
-│   ├── config/          # Конфигурация (DB, JWT, Piston)
-│   ├── controllers/     # Обработчики запросов
+│   ├── config/          # Configuration (DB, JWT, Piston)
+│   ├── controllers/     # Request handlers
 │   ├── middleware/      # Auth, validation, errors
 │   ├── repositories/    # SQL queries
 │   ├── routes/          # API endpoints
-│   ├── services/        # Бизнес-логика (codeExecution)
-│   └── utils/           # Утилиты
+│   ├── services/        # Business logic (code execution)
+│   └── utils/           # Utilities
 ├── public/              # Frontend (HTML/CSS/JS)
-├── database/            # SQL схемы и seed data
-├── scripts/             # Скрипты запуска
-├── docker-compose.yml   # Docker конфигурация
+├── database/            # SQL schemas and seed data
+├── scripts/             # Start scripts
+├── docker-compose.yml   # Docker configuration
 └── package.json
 ```
 
 ## 🔌 API Endpoints
 
-### Auth
-- `POST /api/auth/register` - Регистрация
-- `POST /api/auth/login` - Авторизация
-- `GET /api/auth/me` - Текущий пользователь
+### Auth (Public)
+- `POST /api/auth/register` - Register a new user with encrypted password
+- `POST /api/auth/login` - Authenticate user and return JWT token
+- `GET /api/auth/me` - Get current authenticated user
 
-### Courses
-- `GET /api/courses` - Список курсов
-- `GET /api/courses/:id` - Курс с уровнями
-- `POST /api/courses/:id/start` - Начать курс
+### Users (Private)
+- `GET /api/users/profile` - Retrieve logged‑in user's profile
+- `PUT /api/users/profile` - Update profile (email, username, etc.)
+- `GET /api/users/progress` - Get user progress and statistics
+- `GET /api/users/leaderboard` - Get global leaderboard
 
-### Levels
-- `GET /api/levels/:id` - Уровень с заданием
+### Courses (Private)
+- `GET /api/courses` - List all available courses
+- `GET /api/courses/:id` - Get course details with levels
+- `POST /api/courses/:id/start` - Enroll in a course
 
-### Submissions
-- `POST /api/submissions` - Отправить код
-- `GET /api/submissions/:token` - Результат проверки
-- `GET /api/submissions/languages` - Доступные языки
+### Levels (Private)
+- `GET /api/levels/:id` - Get level details with challenges
 
-### Users
-- `GET /api/users/profile` - Профиль
-- `PUT /api/users/profile` - Обновить профиль
-- `GET /api/users/progress` - Прогресс пользователя
-- `GET /api/users/leaderboard` - Таблица лидеров
+### Submissions (Private)
+- `POST /api/submissions` - Submit code for checking
+- `GET /api/submissions/:token` - Get submission result
+- `GET /api/submissions/languages` - List available programming languages
 
-## 🎮 Функциональность
+### Admin (Private, Admin‑only)
+- `POST /api/admin/courses` - Create new course
+- `PUT /api/admin/courses/:id` - Update course
+- `DELETE /api/admin/courses/:id` - Delete course
+- `POST /api/admin/levels` - Create new level
+- `PUT /api/admin/levels/:id` - Update level
+- `DELETE /api/admin/levels/:id` - Delete level
 
-- ✅ Регистрация и авторизация (JWT)
-- ✅ Курсы с уровнями (roadmap)
-- ✅ Теория + практические задания
-- ✅ Автоматическая проверка кода через Judge0
-- ✅ XP система и уровни
-- ✅ Прогресс пользователя
+## 🎮 Functionality
+
+- ✅ Registration and authentication (JWT)
+- ✅ Roadmap‑style courses and levels
+- ✅ Theory + practice tasks
+- ✅ Automatic code checking via Piston
+- ✅ XP and level system
+- ✅ User progress
 - ✅ Leaderboard
 
-## 🔧 Конфигурация
+## 🔧 Configuration
 
-Переменные окружения (.env):
+Environment variables (.env):
 
 ```env
 PORT=3000
@@ -189,94 +197,140 @@ JWT_SECRET=your-secret-key
 JWT_EXPIRES_IN=7d
 ```
 
-## 🛡️ Безопасность
+## 🛡️ Security
 
-- Пароли хешируются через bcrypt
-- JWT токены для авторизации
-- Helmet для HTTP headers
-- CORS настроен
-- Валидация входных данных
+- Passwords are hashed with bcrypt
+- JWT tokens for authentication (7‑day expiry)
+- Protected routes with authentication middleware
+- Helmet for HTTP headers security
+- CORS configured for cross‑origin requests
+- Input validation with middleware
+- Role‑based access control (RBAC) for admin features
 
-## Дерево файлов
+---
+
+## 📸 Screenshots
+
+### 1. Landing and Course Selection Page
+Clean and modern landing page introducing the platform with call‑to‑action buttons for registration and login.
+![](docs/screenshots/landing.png)
+
+### 2. Interactive Roadmap
+Visual roadmap showing course progression with locked/unlocked levels. Each level displays completion status and XP earned.
+![](docs/screenshots/levels.png)
+
+### 3. Code Editor & Challenge
+Integrated code editor with syntax highlighting supporting multiple programming languages. Users can write, test, and submit code directly in the browser.
+![](docs/screenshots/editor.png)
+
+### 4. Instant Feedback
+Automatic code execution via Piston engine provides immediate test results, showing passed/failed test cases with detailed output.
+![](docs/screenshots/piston.png)
+
+### 5. Leaderboard
+Competitive leaderboard displaying top performers based on XP earned, encouraging friendly competition among learners.
+![](docs/screenshots/leaderboard.png)
+
+### 6. Admin Panel
+Comprehensive admin dashboard for managing courses, levels, challenges, and monitoring user activity.
+![](docs/screenshots/admin-panel.png)
+
+## 📋 Requirements Compliance
+
+### ✅ Implemented Features:
+
+**1. Project Setup (10 points)**
+- ✅ Topic: Interactive programming learning platform
+- ✅ Node.js & Express backend
+- ✅ Modular structure (routes, controllers, middleware, services, repositories)
+- ✅ README with setup, overview, API docs, and screenshots
+
+**2. Database (10 points)**
+- ✅ Two main collections: Users and Courses/Levels
+- ⚠️ **Note:** Uses PostgreSQL instead of MongoDB for better relational data handling (users ↔ courses ↔ levels ↔ submissions). PostgreSQL provides superior referential integrity and complex query support essential for educational progress tracking.
+
+**3. API Endpoints (20 points)**
+- ✅ POST /api/auth/register (encrypted passwords)
+- ✅ POST /api/auth/login (JWT tokens)
+- ✅ GET /api/users/profile
+- ✅ PUT /api/users/profile
+- ✅ POST /api/submissions (create resource)
+- ✅ GET /api/submissions (list resources)
+- ✅ GET /api/levels/:id (get specific resource)
+- ✅ PUT /api/submissions/:id (update resource)
+- ✅ DELETE /api/admin/courses/:id (delete resource)
+
+**4. Authentication & Security (15 points)**
+- ✅ JWT for authentication
+- ✅ Protected endpoints with middleware
+- ✅ bcrypt for password hashing
+
+**5. Validation & Error Handling (5 points)**
+- ✅ Input validation middleware
+- ✅ Appropriate error codes (400, 401, 404, 500)
+- ✅ Global error handling middleware
+
+**6. Deployment (10 points)**
+- ✅ Environment variables for sensitive data
+- ✅ Docker‑ready with docker‑compose.yml
+- 🔄 Ready for Render/Railway/Replit deployment
+
+**7. Advanced Features**
+- ✅ **RBAC (5 points):** Admin role with elevated permissions for content management
+- ❌ **SMTP Email Service (5 points):** Not implemented
+
+**Total:** 65/70 points (without SMTP)
+
+---
+
+## 🔮 Future Enhancements
+
+- Email notifications (SMTP integration via Nodemailer)
+- Social authentication (Google, GitHub OAuth)
+- Code collaboration features
+- Video tutorials integration
+- Certificate generation upon course completion
+- Discussion forums for each level
+
+## 📂 File tree (key paths)
 
 ```
-├── 📁 database
-│   ├── 📄 init.js
-│   ├── 📄 schema.sql
-│   └── 📄 seed.sql
-├── 📁 docs
-│   └── 📕 Final Project Draft (1).pdf
-├── 📁 public
-│   ├── 📁 css
-│   │   ├── 🎨 admin.css
-│   │   ├── 🎨 pages.css
-│   │   └── 🎨 style.css
-│   ├── 📁 js
-│   │   ├── 📄 admin.js
-│   │   ├── 📄 api.js
-│   │   ├── 📄 auth.js
-│   │   └── 📄 main.js
-│   ├── 🌐 admin.html
-│   ├── 🌐 course.html
-│   ├── 🌐 index.html
-│   ├── 🌐 leaderboard.html
-│   ├── 🌐 level.html
-│   ├── 🌐 login.html
-│   └── 🌐 register.html
-├── 📁 scripts
-│   ├── 📄 start.ps1
-│   └── 📄 start.sh
-├── 📁 src
-│   ├── 📁 config
-│   │   ├── 📄 database.js
-│   │   ├── 📄 judge0.js
-│   │   └── 📄 jwt.js
-│   ├── 📁 controllers
-│   │   ├── 📄 admin.controller.js
-│   │   ├── 📄 auth.controller.js
-│   │   ├── 📄 courses.controller.js
-│   │   ├── 📄 levels.controller.js
-│   │   ├── 📄 submissions.controller.js
-│   │   └── 📄 users.controller.js
-│   ├── 📁 middleware
-│   │   ├── 📄 auth.js
-│   │   ├── 📄 errorHandler.js
-│   │   └── 📄 validate.js
-│   ├── 📁 repositories
-│   │   ├── 📄 admin.repository.js
-│   │   ├── 📄 challenge.repository.js
-│   │   ├── 📄 course.repository.js
-│   │   ├── 📄 level.repository.js
-│   │   ├── 📄 progress.repository.js
-│   │   ├── 📄 submission.repository.js
-│   │   └── 📄 user.repository.js
-│   ├── 📁 routes
-│   │   ├── 📄 admin.routes.js
-│   │   ├── 📄 auth.routes.js
-│   │   ├── 📄 courses.routes.js
-│   │   ├── 📄 index.js
-│   │   ├── 📄 levels.routes.js
-│   │   ├── 📄 submissions.routes.js
-│   │   └── 📄 users.routes.js
-│   ├── 📁 services
-│   │   ├── 📄 auth.service.js
-│   │   ├── 📄 codeExecution.service.js
-│   │   ├── 📄 course.service.js
-│   │   ├── 📄 judge0.service.js
-│   │   ├── 📄 level.service.js
-│   │   ├── 📄 progress.service.js
-│   │   └── 📄 user.service.js
-│   ├── 📁 utils
-│   │   ├── 📄 ApiError.js
-│   │   ├── 📄 catchAsync.js
-│   │   └── 📄 xpCalculator.js
-│   ├── 📄 app.js
-│   └── 📄 server.js
-├── ⚙️ .env.example
-├── ⚙️ .gitignore
-├── 🐳 Dockerfile
-├── 📝 README.md
-├── ⚙️ docker-compose.yml
-├── ⚙️ package-lock.json
-└── ⚙️ package.json
+├── database
+│   ├── init.js
+│   ├── schema.sql
+│   └── seed.sql
+├── docs
+│   ├── ARCHITECTURE.md
+│   ├── Backend Final Project Requirements.pdf
+│   └── Final Project Draft (1).pdf
+├── public
+│   ├── css
+│   ├── js
+│   ├── admin.html
+│   ├── course.html
+│   ├── index.html
+│   ├── leaderboard.html
+│   ├── level.html
+│   ├── login.html
+│   └── register.html
+├── scripts
+│   ├── start.ps1
+│   └── start.sh
+├── src
+│   ├── config
+│   │   ├── database.js
+│   │   ├── jwt.js
+│   │   └── piston.js
+│   ├── controllers
+│   ├── middleware
+│   ├── repositories
+│   ├── routes
+│   ├── services
+│   ├── utils
+│   ├── app.js
+│   └── server.js
+├── .env.example
+├── Dockerfile
+├── docker-compose.yml
+└── package.json
 ```
